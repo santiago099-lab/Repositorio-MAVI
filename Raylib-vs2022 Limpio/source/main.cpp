@@ -6,12 +6,21 @@
 
 int main(void)
 {
-	InitWindow(900, 600, "Tarjeta de presentacion - Santiago Tomas Bartoloni");
+	InitWindow(1024, 768, "Tarjeta de presentacion - Santiago Tomas Bartoloni");
 
 	SetTargetFPS(60);
 
 	int mostrarMensaje1 = 1;
 	float tiempo = 0.0f;
+
+	Vector2 spherePosition = { 512, 384 };
+	Vector2 sphereVelocity = { 200, 150 };
+	float sphereRadius = 30.0f;
+	Color sphereColor = SKYBLUE;
+	int bounceCount = 0;
+
+	Color colors[] = { SKYBLUE, RED, GREEN, YELLOW, PURPLE, ORANGE, PINK, LIME };
+	int currentColorIndex = 0;
 
 	while (!WindowShouldClose())
 	{
@@ -20,6 +29,35 @@ int main(void)
 		if (IsKeyPressed(KEY_SPACE))
 		{
 			mostrarMensaje1 = 1 - mostrarMensaje1;
+		}
+
+		float deltaTime = GetFrameTime();
+		spherePosition.x += sphereVelocity.x * deltaTime;
+		spherePosition.y += sphereVelocity.y * deltaTime;
+
+		if (spherePosition.x - sphereRadius <= 0 || spherePosition.x + sphereRadius >= 1024)
+		{
+			sphereVelocity.x *= -1;
+			bounceCount++;
+			currentColorIndex = (currentColorIndex + 1) % 8;
+			sphereColor = colors[currentColorIndex];
+
+			if (spherePosition.x - sphereRadius <= 0)
+				spherePosition.x = sphereRadius;
+			else
+				spherePosition.x = 1024 - sphereRadius;
+		}
+
+		if (spherePosition.y - sphereRadius <= 0 || spherePosition.y + sphereRadius >= 768)
+		{
+			sphereVelocity.y *= -1;
+			bounceCount++;
+			currentColorIndex = (currentColorIndex + 1) % 8;
+			sphereColor = colors[currentColorIndex];
+			if (spherePosition.y - sphereRadius <= 0)
+				spherePosition.y = sphereRadius;
+			else
+				spherePosition.y = 768 - sphereRadius;
 		}
 
 		BeginDrawing();
@@ -99,6 +137,14 @@ int main(void)
 			DrawText("*", 250, 575, 20, GOLD);
 			DrawText("*", 630, 575, 20, GOLD);
 		}
+
+		Color sphereColorAlpha = sphereColor;
+		sphereColorAlpha.a = 200;
+		DrawCircleV(spherePosition, sphereRadius, sphereColorAlpha);
+
+		DrawText(TextFormat("Resolucion: 1024x768"), 10, 10, 20, WHITE);
+		DrawText(TextFormat("Posicion: (%.0f, %.0f)", spherePosition.x, spherePosition.y), 10, 35, 20, WHITE);
+		DrawText(TextFormat("Rebotes: %d", bounceCount), 10, 60, 20, WHITE);
 
 		EndDrawing();
 	}
