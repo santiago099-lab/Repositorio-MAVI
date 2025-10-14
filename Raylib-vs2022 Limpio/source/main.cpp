@@ -3,152 +3,99 @@
 #endif
 #include <cmath>
 #include "raylib.h"
+#include "main.h"
 
 int main(void)
 {
-	InitWindow(1024, 768, "Tarjeta de presentacion - Santiago Tomas Bartoloni");
-
+	InitWindow(1024, 768, "Sprites en Accion - Santiago Tomas Bartoloni");
 	SetTargetFPS(60);
 
-	int mostrarMensaje1 = 1;
-	float tiempo = 0.0f;
+	Texture2D spriteTexture = LoadTexture("mario.png");
 
-	Vector2 spherePosition = { 512, 384 };
-	Vector2 sphereVelocity = { 200, 150 };
-	float sphereRadius = 30.0f;
-	Color sphereColor = SKYBLUE;
-	int bounceCount = 0;
+	SetTextureFilter(spriteTexture, TEXTURE_FILTER_BILINEAR);
 
-	Color colors[] = { SKYBLUE, RED, GREEN, YELLOW, PURPLE, ORANGE, PINK, LIME };
-	int currentColorIndex = 0;
+	Vector2 sprite1Position = { 200, 300 };
+	float sprite1Scale = 0.5f;
+	float sprite1Rotation = 0.0f;
+	Color sprite1Color = WHITE;
 
+	Vector2 sprite2Position = { 600, 300 };
+	float sprite2Scale = 0.5f;
+	float sprite2Rotation = 0.0f;
+	Color sprite2Color = { 255, 200, 200, 255 };
+
+	float moveSpeed = 200.0f;
+	bool swapped = false;
 	while (!WindowShouldClose())
 	{
-		tiempo += GetFrameTime();
+		float deltaTime = GetFrameTime();
+
+		if (IsKeyDown(KEY_W)) sprite1Position.y -= moveSpeed * deltaTime;
+		if (IsKeyDown(KEY_S)) sprite1Position.y += moveSpeed * deltaTime;
+		if (IsKeyDown(KEY_A)) sprite1Position.x -= moveSpeed * deltaTime;
+		if (IsKeyDown(KEY_D)) sprite1Position.x += moveSpeed * deltaTime;
+
+		sprite2Rotation += 30.0f * deltaTime;
 
 		if (IsKeyPressed(KEY_SPACE))
 		{
-			mostrarMensaje1 = 1 - mostrarMensaje1;
-		}
+			Vector2 tempPos = sprite1Position;
+			sprite1Rotation = sprite2Rotation;
+			sprite2Position = tempPos;
 
-		float deltaTime = GetFrameTime();
-		spherePosition.x += sphereVelocity.x * deltaTime;
-		spherePosition.y += sphereVelocity.y * deltaTime;
+			float tempScale = sprite1Scale;
+			sprite1Scale = sprite2Scale;
+			sprite2Scale = tempScale;
 
-		if (spherePosition.x - sphereRadius <= 0 || spherePosition.x + sphereRadius >= 1024)
-		{
-			sphereVelocity.x *= -1;
-			bounceCount++;
-			currentColorIndex = (currentColorIndex + 1) % 8;
-			sphereColor = colors[currentColorIndex];
+			Color tempColor = sprite1Color;
+			sprite1Color = sprite2Color;
+			sprite2Color = tempColor;
 
-			if (spherePosition.x - sphereRadius <= 0)
-				spherePosition.x = sphereRadius;
-			else
-				spherePosition.x = 1024 - sphereRadius;
-		}
-
-		if (spherePosition.y - sphereRadius <= 0 || spherePosition.y + sphereRadius >= 768)
-		{
-			sphereVelocity.y *= -1;
-			bounceCount++;
-			currentColorIndex = (currentColorIndex + 1) % 8;
-			sphereColor = colors[currentColorIndex];
-			if (spherePosition.y - sphereRadius <= 0)
-				spherePosition.y = sphereRadius;
-			else
-				spherePosition.y = 768 - sphereRadius;
+			swapped = !swapped;
 		}
 
 		BeginDrawing();
 
 		ClearBackground(DARKBLUE);
-		int i;
-		for (i = 0; i < 8; i++)
+
+		DrawTextureEx(
+			spriteTexture,
+			sprite1Position,
+			sprite1Rotation,
+			sprite1Scale,
+			sprite1Color
+		);
+
+		DrawText("SRITES EN ACCION", 350, 20, 30, YELLOW);
+
+		DrawText("=== SPRITE 1 ===", 20, 60, 20, LIME);
+		DrawText(TextFormat("Posicion: (%.0f, %.0f)", sprite1Position.x, sprite1Position.y), 20, 85, 18, WHITE);
+		DrawText(TextFormat("Escala: %.1fx", sprite1Scale), 20, 105, 18, WHITE);
+		DrawText(TextFormat("Rotacion: %.0f", sprite1Rotation), 20, 125, 18, WHITE);
+		DrawText(TextFormat("Color: RGB(%d, %d, %d)", sprite1Color.r, sprite1Color.g, sprite1Color.b), 20, 145, 18, WHITE);
+
+		DrawText("=== SPRITE 2 ===", 20, 185, 20, PINK);
+		DrawText(TextFormat("Posicion: (%.0f, %.0f)", sprite2Position.x, sprite2Position.y), 20, 210, 18, WHITE);
+		DrawText(TextFormat("Escala: %.1fx", sprite2Scale), 20, 230, 18, WHITE);
+		DrawText(TextFormat("Rotacion: %.0f", sprite2Rotation), 20, 250, 18, WHITE);
+		DrawText(TextFormat("Color: RGB(%d, %d, %d)", sprite2Color.r, sprite2Color.g, sprite2Color.b), 20, 270, 18, WHITE);
+
+		DrawText("Controles:", 20, 320, 20, GOLD);
+		DrawText("WASD - Mover Sprite 1", 20, 345, 18, LIGHTGRAY);
+		DrawText("Espacio - Intercambiar propiedades", 20, 365, 18, LIGHTGRAY);
+
+		if (swapped)
 		{
-			float x = 150 + i * 100 + sin(tiempo + i) * 20;
-			float y = 100 + sin(tiempo * 0.5f + i * 0.5f) * 30;
-			float radio = (int)(15.0f + sin(tiempo + i * 0.3f) * 8.0f);
-			DrawCircle((int)x, (int)y, radio, SKYBLUE);
+			DrawText("Propiedades intercambiadas!", 350, 700, 20, RED);
 		}
 
-
-		DrawRectangleLines(50, 50, 800, 600, GOLD);
-		DrawRectangleLines(52, 52, 796, 596, YELLOW);
-
-		DrawText("Santiago Tomas Bartoloni", 152, 152, 32, BLACK);
-		DrawText("Santiago Tomas Bartoloni", 150, 150, 32, WHITE);
-
-		float lineaY = 200 + sin(tiempo * 2) * 5;
-		DrawRectangle(200, (int)lineaY, 500, 4, GOLD);
-
-		Vector2 hexCenter = { 250, 350 };
-		for (i = 0; i < 6; i++)
-		{
-			float angle = (i * 60.0f) * PI / 180.0f + tiempo * 0.5f;
-			float x1 = hexCenter.x + cos(angle) * 50;
-			float y1 = hexCenter.y + sin(angle) * 50;
-			float x2 = hexCenter.x + cos(angle + PI / 3) * 50;
-			float y2 = hexCenter.y + sin(angle + PI / 3) * 50;
-			DrawLine((int)x1, (int)y1, (int)x2, (int)y2, PINK);
-		}
-
-		DrawRectangle(410, 325, 80, 50, LIME);
-
-		float radioCirculo = 40 + sin(tiempo * 3) * 10;
-		DrawCircle(650, 350, (int)radioCirculo, ORANGE);
-		DrawCircleLines(650, 350, (int)(radioCirculo + 5), RED);
-
-		Vector2 v1 = { 750, 320 };
-		Vector2 v2 = { 720, 380 };
-		Vector2 v3 = { 780, 380 };
-		DrawTriangle(v1, v2, v3, PURPLE);
-
-		const char* mensaje;
-		Color colorMensaje;
-		if (mostrarMensaje1)
-		{
-			mensaje = "Hola mundo";
-			colorMensaje = YELLOW;
-		}
-		else
-		{
-			mensaje = "Estoy aprendiendo en mavi";
-			colorMensaje = PINK;
-		}
-
-		int anchoMensaje = MeasureText(mensaje, 28);
-		int posXMensaje = (900 - anchoMensaje) / 2;
-
-		DrawText(mensaje, posXMensaje + 2, 472, 28, BLACK);
-		DrawText(mensaje, posXMensaje, 470, 28, colorMensaje);
-
-		for (i = 0; i < 20; i++)
-		{
-			float px = 100 + (i * 35) % 700 + sin(tiempo + i * 0.2f) * 10;
-			float py = 550 + sin(tiempo * 1.5f + i * 0.3f) * 10;
-			DrawCircle((int)px, (int)py, 2, WHITE);
-		}
-		DrawText("Presiona ESPACIO para cambiar el mensaje", 270, 580, 16, LIGHTGRAY);
-
-		float indicatorAlpha = (sin(tiempo * 5));
-		if (indicatorAlpha > 0)
-		{
-			DrawText("*", 250, 575, 20, GOLD);
-			DrawText("*", 630, 575, 20, GOLD);
-		}
-
-		Color sphereColorAlpha = sphereColor;
-		sphereColorAlpha.a = 200;
-		DrawCircleV(spherePosition, sphereRadius, sphereColorAlpha);
-
-		DrawText(TextFormat("Resolucion: 1024x768"), 10, 10, 20, WHITE);
-		DrawText(TextFormat("Posicion: (%.0f, %.0f)", spherePosition.x, spherePosition.y), 10, 35, 20, WHITE);
-		DrawText(TextFormat("Rebotes: %d", bounceCount), 10, 60, 20, WHITE);
+		DrawText(TextFormat("Textura: %dx%d pixels", spriteTexture.width, spriteTexture.height), 20, 420, 18, ORANGE);
+		DrawText("Filtro: BILINEAR aplicado", 20, 440, 18, ORANGE);
 
 		EndDrawing();
 	}
 
+	UnloadTexture(spriteTexture);
 	CloseWindow();
 
 	return 0;
