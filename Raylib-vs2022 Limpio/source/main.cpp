@@ -4,98 +4,123 @@
 #include <cmath>
 #include "raylib.h"
 #include "main.h"
+#include <string>
 
-int main(void)
+int main()
 {
-	InitWindow(1024, 768, "Sprites en Accion - Santiago Tomas Bartoloni");
+	const int screenWidth = 800;
+	const int screenHeight = 600;
+
+	InitWindow(screenWidth, screenHeight, "!Despierta, Mavi¡ Aprende a moverte en el codigo");
+	InitAudioDevice();
+
+	Sound jumpSound = LoadSound("resources/jump.wav");
+
+	float playerX = screenWidth / 2.0f;
+	float playerY = screenHeight - 2.0f;
+	float playerSize = 50.0f;
+	float playerSpeed = 5.0f;
+
+	float jumpSpeed = 0.0f;
+	bool isJumping = false;
+
+	const float initialX = screenWidth / 2.0f;
+	const float initialY = screenHeight / 2.0f;
+
+	bool showMessage = false;
+	Color backgroundColor = DARKGRAY;
+
+	Rectangle button = { 650, 20, 120, 50 };
+
+	std::string statusText = "Presiona las teclas para mover el cuadrado";
+
 	SetTargetFPS(60);
 
-	Texture2D spriteTexture = LoadTexture("mario.png");
-
-	SetTextureFilter(spriteTexture, TEXTURE_FILTER_BILINEAR);
-
-	Vector2 sprite1Position = { 200, 300 };
-	float sprite1Scale = 0.5f;
-	float sprite1Rotation = 0.0f;
-	Color sprite1Color = WHITE;
-
-	Vector2 sprite2Position = { 600, 300 };
-	float sprite2Scale = 0.5f;
-	float sprite2Rotation = 0.0f;
-	Color sprite2Color = { 255, 200, 200, 255 };
-
-	float moveSpeed = 200.0f;
-	bool swapped = false;
 	while (!WindowShouldClose())
 	{
-		float deltaTime = GetFrameTime();
-
-		if (IsKeyDown(KEY_W)) sprite1Position.y -= moveSpeed * deltaTime;
-		if (IsKeyDown(KEY_S)) sprite1Position.y += moveSpeed * deltaTime;
-		if (IsKeyDown(KEY_A)) sprite1Position.x -= moveSpeed * deltaTime;
-		if (IsKeyDown(KEY_D)) sprite1Position.x += moveSpeed * deltaTime;
-
-		sprite2Rotation += 30.0f * deltaTime;
-
-		if (IsKeyPressed(KEY_SPACE))
+		if (IsKeyDown(KEY_LEFT))
 		{
-			Vector2 tempPos = sprite1Position;
-			sprite1Rotation = sprite2Rotation;
-			sprite2Position = tempPos;
+			playerX -= playerSpeed;
+			statusText = "Moviendose a la izquierda";
+		}
+		if (IsKeyDown(KEY_RIGHT))
+		{
+			playerX += playerSpeed;
+			statusText = "Moviendose a la derecha";
+		}
+		if (IsKeyPressed(KEY_SPACE) && !isJumping)
+		{
+			isJumping = true;
+			jumpSpeed = -15.0f;
+			statusText = "Saltando";
+		}
+		if (isJumping)
+		{
+			playerY += jumpSpeed;
+			jumpSpeed += 0.8f;
+			if (playerY >= initialY)
+			{
+				playerY = initialY;
+				isJumping = false;
+				jumpSpeed = 0.0f;
+			}
+		}
 
-			float tempScale = sprite1Scale;
-			sprite1Scale = sprite2Scale;
-			sprite2Scale = tempScale;
+		if (IsKeyPressed(KEY_M))
+		{
+			showMessage = !showMessage;
+			if (showMessage)
+				statusText = "Mensaje del sistema activado";
+			else
+				statusText = "Mensaje del sistema desactivado";
+		}
+		if (playerX < playerSize / 2) playerX = playerSize / 2;
+		if (playerX > screenWidth - playerSize / 2) playerX = screenWidth - playerSize / 2;
 
-			Color tempColor = sprite1Color;
-			sprite1Color = sprite2Color;
-			sprite2Color = tempColor;
-
-			swapped = !swapped;
+		Vector2 mousePos = GetMousePosition();
+		if (CheckCollisionPointRec(mousePos, button))
+		{
+			if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+			{
+				backgroundColor = Color{(unsigned char)GetRandomValue(50, 200), (unsigned char)GetRandomValue(50, 200), (unsigned char)GetRandomValue(50, 200), 255};
+				statusText = "Color de fondo cambiado";
+			}
 		}
 
 		BeginDrawing();
 
-		ClearBackground(DARKBLUE);
+		ClearBackground(backgroundColor);
 
-		DrawTextureEx(
-			spriteTexture,
-			sprite1Position,
-			sprite1Rotation,
-			sprite1Scale,
-			sprite1Color
-		);
+		Color buttonColor = CheckCollisionPointRec(mousePos, button) ? ORANGE : YELLOW;
+		DrawRectangleRec(button, buttonColor);
+		DrawRectangleLinesEx(button, 2, BLACK);
+		DrawText("Cambiar Fondo", button.x + 15, button.y + 10, 15, BLACK);
 
-		DrawText("SRITES EN ACCION", 350, 20, 30, YELLOW);
+		DrawRectangle( playerX - playerSize / 2, playerY - playerSize / 2, playerSize, playerSize, BLUE );
+		DrawRectangleLinesEx({ playerX - playerSize / 2, playerY - playerSize / 2, playerSize, playerSize }, 3, DARKBLUE);
 
-		DrawText("=== SPRITE 1 ===", 20, 60, 20, LIME);
-		DrawText(TextFormat("Posicion: (%.0f, %.0f)", sprite1Position.x, sprite1Position.y), 20, 85, 18, WHITE);
-		DrawText(TextFormat("Escala: %.1fx", sprite1Scale), 20, 105, 18, WHITE);
-		DrawText(TextFormat("Rotacion: %.0f", sprite1Rotation), 20, 125, 18, WHITE);
-		DrawText(TextFormat("Color: RGB(%d, %d, %d)", sprite1Color.r, sprite1Color.g, sprite1Color.b), 20, 145, 18, WHITE);
+		DrawText(TextFormat("Posicion: X=%.0f Y=%.0f", playerX, playerY), 10, 10, 20, WHITE);
 
-		DrawText("=== SPRITE 2 ===", 20, 185, 20, PINK);
-		DrawText(TextFormat("Posicion: (%.0f, %.0f)", sprite2Position.x, sprite2Position.y), 20, 210, 18, WHITE);
-		DrawText(TextFormat("Escala: %.1fx", sprite2Scale), 20, 230, 18, WHITE);
-		DrawText(TextFormat("Rotacion: %.0f", sprite2Rotation), 20, 250, 18, WHITE);
-		DrawText(TextFormat("Color: RGB(%d, %d, %d)", sprite2Color.r, sprite2Color.g, sprite2Color.b), 20, 270, 18, WHITE);
+		DrawText(statusText.c_str(), 10, 40, 20, YELLOW);
 
-		DrawText("Controles:", 20, 320, 20, GOLD);
-		DrawText("WASD - Mover Sprite 1", 20, 345, 18, LIGHTGRAY);
-		DrawText("Espacio - Intercambiar propiedades", 20, 365, 18, LIGHTGRAY);
-
-		if (swapped)
+		if (showMessage)
 		{
-			DrawText("Propiedades intercambiadas!", 350, 700, 20, RED);
+			DrawRectangle(100, 200, 600, 200, Fade(BLACK, 0.8f));
+			DrawText("Mensaje del sistema:", 120, 220, 25, GREEN);
+			DrawText("¡El cuadrado esta respondiendo!", 120, 260, 20, WHITE);
+			DrawText("Cada tecla que presionas es una señal", 120, 290, 20, WHITE);
+			DrawText("de conciencia en el codigo.", 120, 360, 18, GRAY);
 		}
 
-		DrawText(TextFormat("Textura: %dx%d pixels", spriteTexture.width, spriteTexture.height), 20, 420, 18, ORANGE);
-		DrawText("Filtro: BILINEAR aplicado", 20, 440, 18, ORANGE);
+		DrawText("Controles:", 10, screenHeight - 140, 18, LIGHTGRAY);
+		DrawText("Flechas: Mover | ESPACIO: Saltar", 10, screenHeight - 115, 16, LIGHTGRAY);
+		DrawText("R: Reiniciar | M: Mensaje", 10, screenHeight - 90, 16, LIGHTGRAY);
+		DrawText("Click en boton: Cambiar color", 10, screenHeight - 65, 16, LIGHTGRAY);
 
 		EndDrawing();
 	}
 
-	UnloadTexture(spriteTexture);
+	CloseAudioDevice();
 	CloseWindow();
 
 	return 0;

@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Usuario\\OneDrive\\Documentos\\GitHub\\Repositorio-MAVI\\Raylib-vs2022 Limpio\\source\\",
+  "WorkspaceRootPath": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\Raylib-vs2022 Limpio\\source\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F0FAFCF8-D32D-4BA8-A65C-6A8FA57D8349}|RaylibTemplate.vcxproj|C:\\Users\\Usuario\\OneDrive\\Documentos\\GitHub\\Repositorio-MAVI\\Raylib-vs2022 Limpio\\source\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{F0FAFCF8-D32D-4BA8-A65C-6A8FA57D8349}|RaylibTemplate.vcxproj|C:\\Users\\Usuario\\OneDrive\\Escritorio\\Raylib-vs2022 Limpio\\source\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{F0FAFCF8-D32D-4BA8-A65C-6A8FA57D8349}|RaylibTemplate.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -20,11 +20,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\Documentos\\GitHub\\Repositorio-MAVI\\Raylib-vs2022 Limpio\\source\\main.cpp",
+              "DocumentMoniker": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\Raylib-vs2022 Limpio\\source\\main.cpp",
               "RelativeDocumentMoniker": "main.cpp",
-              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\Documentos\\GitHub\\Repositorio-MAVI\\Raylib-vs2022 Limpio\\source\\main.cpp",
+              "ToolTip": "C:\\Users\\Usuario\\OneDrive\\Escritorio\\Raylib-vs2022 Limpio\\source\\main.cpp",
               "RelativeToolTip": "main.cpp",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAABHAAAAAAAAAA==",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAAAH0AAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-02T15:45:41.027Z",
               "EditorCaption": ""
