@@ -66,6 +66,15 @@ int main()
 			}
 		}
 
+		if (IsKeyPressed(KEY_R))
+		{
+			playerX = initialX;
+			playerY = initialY;
+			isJumping = false;
+			jumpSpeed = 0.0f;
+			statusText = "Posicion reiniciada";
+		}
+
 		if (IsKeyPressed(KEY_M))
 		{
 			showMessage = !showMessage;
