@@ -5,536 +5,146 @@
 #include "raylib.h"
 #include "main.h"
 #include <string>
+#include <time.h>
 
 
 
+const int screenWidth = 800;
+const int screenHeight = 600;
+const float VELOCIDAD_MINIMA = 2.0f;
+const float VELOCIDAD_MAXIMA = 15.0f;
+const float INCREMENTO_VELOCIDAD = 0.5f;
 
-
-
-// Constantes del juego
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-const float GRAVITY = 0.5f;
-const float JUMP_FORCE = -13.0f;
-const float PLAYER_SPEED = 4.0f;
-
-enum GameState {
-    MENU,
-    PLAYING,
-    GAMEOVER,
-    WIN
+struct Pelota {
+	Vector2 posicion;
+	Vector2 velocidad;
+	float radio;
+	Color color;
+	float velocidadActual;
 };
 
-struct Player {
-    Vector2 position;
-    Vector2 velocity;
-    float width;
-    float height;
-    Color color;
-    bool isOnGround;
-    int lives;
 
-    Player() {
-        Reset();
-    }
+Pelota pelota;
+Texture2D spritePelota;
+// esto es por si en algun momento quiero usar un sprite en lugar de dibujar un circulo
+bool usarSprite = false;
+
+float direccionAleatoria() {
+	return (rand() % 2 == 0) ? -1.0f : 1.0f;
+}
 
-    void Reset() {
-        position = { 100, 400 };
-        velocity = { 0, 0 };
-        width = 40;
-        height = 40;
-        color = BLUE;
-        isOnGround = false;
-        lives = 3;
-    }
 
-    void Move() {
-        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
-            velocity.x = -PLAYER_SPEED;
-        }
-        else if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
-            velocity.x = PLAYER_SPEED;
-        }
-        else {
-            velocity.x = 0;
-        }
+void InitBall() {
+	pelota.posicion = { screenWidth / 2.0f, screenHeight / 2.0f };
+	pelota.radio = 20.0f;
+	pelota.velocidadActual = 5.0f;
+	pelota.velocidad = { pelota.velocidadActual * direccionAleatoria(), pelota.velocidadActual * direccionAleatoria() };
+	pelota.color = RED;
+}
 
-        if (IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_W)) {
-            if (isOnGround) {
-                velocity.y = JUMP_FORCE;
-                isOnGround = false;
-            }
-        }
+void UpdateBall() {
 
-        if (!isOnGround) {
-            velocity.y += GRAVITY;
-        }
+	pelota.posicion.x += pelota.velocidad.x;
+	pelota.posicion.y += pelota.velocidad.y;
 
-        position.x += velocity.x;
-        position.y += velocity.y;
+	if (pelota.posicion.x - pelota.radio <= 0 || pelota.posicion.x + pelota.radio >= screenWidth) {
+		pelota.velocidad.x = pelota.velocidadActual * direccionAleatoria();
 
-        if (velocity.y > 15) velocity.y = 15;
-    }
 
-    void CheckScreenBounds() {
-        if (position.x < 0) position.x = 0;
-        if (position.x + width > SCREEN_WIDTH) position.x = SCREEN_WIDTH - width;
+		if (pelota.posicion.x - pelota.radio < 0) {
+			pelota.posicion.x = pelota.radio;
+		}
+		if (pelota.posicion.x + pelota.radio > screenWidth) {
+			pelota.posicion.x = screenWidth - pelota.radio;
+		}
+	}
 
-        if (position.y > SCREEN_HEIGHT) {
-            lives--;
-            position = { 100, 400 };
-            velocity = { 0, 0 };
-        }
-    }
+	if (pelota.posicion.y - pelota.radio <= 0 || pelota.posicion.y + pelota.radio >= screenHeight) {
+		pelota.velocidad.y = pelota.velocidadActual * direccionAleatoria();
 
-    void Draw() {
-        DrawRectangle(position.x, position.y, width, height, color);
-        DrawRectangleLinesEx(Rectangle{ position.x, position.y, width, height }, 2, DARKBLUE);
+		if (pelota.posicion.y - pelota.radio < 0) {
+			pelota.posicion.y = pelota.radio;
+		}
+		if (pelota.posicion.y + pelota.radio > screenHeight) {
+			pelota.posicion.y = screenHeight - pelota.radio;
+		}
+	}
+}
 
-        DrawCircle(position.x + 12, position.y + 15, 4, WHITE);
-        DrawCircle(position.x + 28, position.y + 15, 4, WHITE);
-        DrawCircle(position.x + 12, position.y + 15, 2, BLACK);
-        DrawCircle(position.x + 28, position.y + 15, 2, BLACK);
-    }
 
-    Rectangle GetRect() {
-        return Rectangle{ position.x, position.y, width, height };
-    }
-};
+void ProcessInput() {
+	if (IsKeyPressed(KEY_UP)) {
+		pelota.velocidadActual += INCREMENTO_VELOCIDAD;
+		if (pelota.velocidadActual > VELOCIDAD_MAXIMA) {
+			pelota.velocidadActual = VELOCIDAD_MAXIMA;
+		}
+	}
+	
+	float dirx = (pelota.velocidad.x > 0) ? 1.0f : -1.0f;
+	float diry = (pelota.velocidad.y > 0) ? 1.0f : -1.0f;
+	pelota.velocidad.x = pelota.velocidadActual * dirx;
+	pelota.velocidad.y = pelota.velocidadActual * diry;
 
-struct Platform {
-    Rectangle rect;
-    Color color;
 
-    Platform(float x, float y, float w, float h, Color c) {
-        rect = { x, y, w, h };
-        color = c;
-    }
+  if (IsKeyPressed(KEY_DOWN)) {
+		pelota.velocidadActual -= INCREMENTO_VELOCIDAD;
+		if (pelota.velocidadActual < VELOCIDAD_MINIMA) {
+			pelota.velocidadActual = VELOCIDAD_MINIMA;
+		}
 
-    void Draw() {
-        DrawRectangleRec(rect, color);
-        DrawRectangleLinesEx(rect, 2, BLACK);
-    }
-};
+	  float dirx = (pelota.velocidad.x > 0) ? 1.0f : -1.0f;
+	  float diry = (pelota.velocidad.y > 0) ? 1.0f : -1.0f;
+	  pelota.velocidad.x = pelota.velocidadActual * dirx;
+	  pelota.velocidad.y = pelota.velocidadActual * diry;
+  }
+}
 
-struct Enemy {
-    Vector2 position;
-    float width;
-    float height;
-    float speed;
-    float minX;
-    float maxX;
-    bool movingRight;
-    Color color;
 
-    Enemy(float x, float y, float w, float h, float spd, float min, float max) {
-        position = { x, y };
-        width = w;
-        height = h;
-        speed = spd;
-        minX = min;
-        maxX = max;
-        movingRight = true;
-        color = RED;
-    }
+void DrawGame() {
+	ClearBackground(DARKGRAY);
 
-    void Update() {
-        if (movingRight) {
-            position.x += speed;
-            if (position.x >= maxX) {
-                movingRight = false;
-            }
-        }
-        else {
-            position.x -= speed;
-            if (position.x <= minX) {
-                movingRight = true;
-            }
-        }
-    }
 
-    void Draw() {
-        float spikeLen = 10;
-        float spikeGap = 8;
+	if (usarSprite && spritePelota.id != 0) {
 
-        // Dibujar pinchos ANTES del cuerpo
+		Rectangle source = { 0.0f, 0.0f, (float)spritePelota.width, (float)spritePelota.height };
+		Rectangle dest = { pelota.posicion.x, pelota.posicion.y, pelota.radio * 2, pelota.radio * 2 };
+		Vector2 origin = {pelota.radio, pelota.radio};
 
-        // Pinchos ARRIBA (corregido orden de vértices)
-        for (float i = 0; i < width; i += spikeGap) {
-            DrawTriangle(
-                Vector2{ position.x + i + spikeGap, position.y },
-                Vector2{ position.x + i + spikeGap / 2, position.y - spikeLen },
-                Vector2{ position.x + i, position.y },
-                MAROON
-            );
-        }
+		DrawTexturePro(spritePelota, source, dest, origin, 0.0f, WHITE);
+	} else {
+		DrawCircleV(pelota.posicion, pelota.radio, pelota.color);
+		DrawCircleLines(pelota.posicion.x, pelota.posicion.y, pelota.radio, MAROON);
+	}
 
-        // Pinchos ABAJO
-        for (float i = 0; i < width; i += spikeGap) {
-            DrawTriangle(
-                Vector2{ position.x + i, position.y + height },
-                Vector2{ position.x + i + spikeGap / 2, position.y + height + spikeLen },
-                Vector2{ position.x + i + spikeGap, position.y + height },
-                MAROON
-            );
-        }
+	DrawText("Pelota rebotando", 10, 10, 30, WHITE);
+	DrawText(TextFormat("Velocidad: %.1f", pelota.velocidadActual), 10, 50, 20, YELLOW);
+	DrawText("Flechas Arriba y Abajo: Cambiar velocidad", 10, 80, 18, LIGHTGRAY);
+	DrawText(TextFormat("Posicion: (%.0f, %.0f)", pelota.posicion.x, pelota.posicion.y), 10, 110, 18, GREEN);
 
-        // Pinchos IZQUIERDA
-        for (float i = 0; i < height; i += spikeGap) {
-            DrawTriangle(
-                Vector2{ position.x, position.y + i },
-                Vector2{ position.x - spikeLen, position.y + i + spikeGap / 2 },
-                Vector2{ position.x, position.y + i + spikeGap },
-                MAROON
-            );
-        }
+	DrawText("La pelota rebota en los bordes aleatoriamente", screenWidth - 380, screenHeight - 30, 16, WHITE);
+}
 
-        // Pinchos DERECHA (corregido orden de vértices)
-        for (float i = 0; i < height; i += spikeGap) {
-            DrawTriangle(
-                Vector2{ position.x + width, position.y + i + spikeGap },
-                Vector2{ position.x + width + spikeLen, position.y + i + spikeGap / 2 },
-                Vector2{ position.x + width, position.y + i },
-                MAROON
-            );
-        }
+int main() {
+	srand(time(NULL));
+	InitWindow(screenWidth, screenHeight, "Pelota rebotando con velocidad variable");
+	SetTargetFPS(60);
 
-        // Cuerpo al final
-        DrawRectangle(position.x, position.y, width, height, color);
-    }
+	InitBall();
 
-    Rectangle GetRect() {
-        return Rectangle{ position.x, position.y, width, height };
-    }
-};
 
-struct Button {
-    Rectangle rect;
-    const char* text;
-    Color normalColor;
-    Color hoverColor;
 
-    Button(float x, float y, float w, float h, const char* txt) {
-        rect = { x, y, w, h };
-        text = txt;
-        normalColor = DARKGRAY;
-        hoverColor = GRAY;
-    }
+	while (!WindowShouldClose()) {
+		ProcessInput();
+		UpdateBall();
+		DrawGame();
+		BeginDrawing();
+		EndDrawing();
+	}
 
-    bool IsClicked() {
-        Vector2 mousePos = GetMousePosition();
-        bool isHover = CheckCollisionPointRec(mousePos, rect);
+	if (usarSprite && spritePelota.id != 0) {
+		UnloadTexture(spritePelota);
+	}
+	CloseWindow();
 
-        if (isHover && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            return true;
-        }
-        return false;
-    }
-
-    void Draw() {
-        Vector2 mousePos = GetMousePosition();
-        bool isHover = CheckCollisionPointRec(mousePos, rect);
-
-        Color currentColor = isHover ? hoverColor : normalColor;
-        DrawRectangleRec(rect, currentColor);
-        DrawRectangleLinesEx(rect, 3, BLACK);
-
-        int textWidth = MeasureText(text, 20);
-        DrawText(text, rect.x + (rect.width - textWidth) / 2, rect.y + (rect.height - 20) / 2, 20, WHITE);
-    }
-};
-
-int main()
-{
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Plataforma 2D - TP Integrador");
-    SetTargetFPS(60);
-
-    GameState currentState = MENU;
-    Player player;
-    int score = 0;
-    float gameTime = 0.0f;
-
-    Platform platforms[] = {
-        Platform(0, 550, SCREEN_WIDTH, 50, DARKGREEN),
-        Platform(200, 450, 150, 20, BROWN),
-        Platform(450, 350, 150, 20, BROWN),
-        Platform(200, 280, 120, 20, BROWN),
-        Platform(500, 150, 150, 20, BROWN)
-    };
-    int platformCount = 5;
-
-    Rectangle goal = { 650, 100, 50, 50 };
-    Rectangle spike = { 400, 520, 80, 30 };
-
-    Enemy enemies[] = {
-        Enemy(250, 420, 40, 40, 2.0f, 200, 350),
-        Enemy(500, 320, 40, 40, 1.5f, 450, 600),
-        Enemy(100, 150, 40, 40, 2.5f, 50, 250)
-    };
-    int enemyCount = 3;
-
-    Button playButton(SCREEN_WIDTH / 2 - 100, 250, 200, 60, "JUGAR");
-    Button exitButton(SCREEN_WIDTH / 2 - 100, 350, 200, 60, "SALIR");
-    Button restartButton(SCREEN_WIDTH / 2 - 100, 300, 200, 60, "REINICIAR");
-    Button exitButton2(SCREEN_WIDTH / 2 - 100, 400, 200, 60, "SALIR");
-
-    while (!WindowShouldClose())
-    {
-        switch (currentState)
-        {
-        case MENU:
-        {
-            if (playButton.IsClicked()) {
-                currentState = PLAYING;
-                player.Reset();
-                score = 0;
-                gameTime = 0.0f;
-            }
-            if (exitButton.IsClicked()) {
-                CloseWindow();
-                return 0;
-            }
-            break;
-        }
-
-        case PLAYING:
-        {
-            gameTime += GetFrameTime();
-
-            player.Move();
-
-            for (int i = 0; i < enemyCount; i++) {
-                enemies[i].Update();
-            }
-
-            // Sistema de colisiones mejorado
-            player.isOnGround = false;
-
-            for (int i = 0; i < platformCount; i++) {
-                Rectangle playerRect = player.GetRect();
-                Rectangle platformRect = platforms[i].rect;
-
-                if (CheckCollisionRecs(playerRect, platformRect)) {
-                    float overlapX = 0;
-                    float overlapY = 0;
-
-                    if (player.position.x + player.width / 2 < platformRect.x + platformRect.width / 2) {
-                        overlapX = (player.position.x + player.width) - platformRect.x;
-                    }
-                    else {
-                        overlapX = platformRect.x + platformRect.width - player.position.x;
-                    }
-
-                    if (player.position.y + player.height / 2 < platformRect.y + platformRect.height / 2) {
-                        overlapY = (player.position.y + player.height) - platformRect.y;
-                    }
-                    else {
-                        overlapY = platformRect.y + platformRect.height - player.position.y;
-                    }
-
-                    if (overlapX < overlapY) {
-                        if (player.position.x + player.width / 2 < platformRect.x + platformRect.width / 2) {
-                            player.position.x = platformRect.x - player.width;
-                        }
-                        else {
-                            player.position.x = platformRect.x + platformRect.width;
-                        }
-                        player.velocity.x = 0;
-                    }
-                    else {
-                        if (player.velocity.y > 0) {
-                            player.position.y = platformRect.y - player.height;
-                            player.velocity.y = 0;
-                            player.isOnGround = true;
-                        }
-                        else {
-                            player.position.y = platformRect.y + platformRect.height;
-                            player.velocity.y = 0;
-                        }
-                    }
-                }
-            }
-
-            player.CheckScreenBounds();
-
-            if (CheckCollisionRecs(player.GetRect(), spike)) {
-                player.lives--;
-                player.position = { 100, 400 };
-                player.velocity = { 0, 0 };
-            }
-
-            for (int i = 0; i < enemyCount; i++) {
-                if (CheckCollisionRecs(player.GetRect(), enemies[i].GetRect())) {
-                    player.lives--;
-                    player.position = { 100, 400 };
-                    player.velocity = { 0, 0 };
-                    break;
-                }
-            }
-
-            if (CheckCollisionRecs(player.GetRect(), goal)) {
-                currentState = WIN;
-                score += 100;
-            }
-
-            if (player.lives <= 0) {
-                currentState = GAMEOVER;
-            }
-
-            if (IsKeyPressed(KEY_R)) {
-                player.Reset();
-                score = 0;
-                gameTime = 0.0f;
-            }
-
-            break;
-        }
-
-        case GAMEOVER:
-        {
-            if (restartButton.IsClicked()) {
-                currentState = PLAYING;
-                player.Reset();
-                score = 0;
-                gameTime = 0.0f;
-            }
-            if (exitButton2.IsClicked()) {
-                CloseWindow();
-                return 0;
-            }
-            break;
-        }
-
-        case WIN:
-        {
-            if (restartButton.IsClicked()) {
-                currentState = PLAYING;
-                player.Reset();
-                score = 0;
-                gameTime = 0.0f;
-            }
-            if (exitButton2.IsClicked()) {
-                CloseWindow();
-                return 0;
-            }
-            break;
-        }
-        }
-
-        BeginDrawing();
-        ClearBackground(SKYBLUE);
-
-        switch (currentState)
-        {
-        case MENU:
-        {
-            DrawText("PLATAFORMA 2D", SCREEN_WIDTH / 2 - 180, 100, 50, BLACK);
-            DrawText("TP Integrador - Raylib", SCREEN_WIDTH / 2 - 150, 170, 20, DARKGRAY);
-
-            playButton.Draw();
-            exitButton.Draw();
-
-            DrawText("Usa WASD o Flechas para moverte", 220, 480, 18, DARKGRAY);
-            DrawText("ESPACIO para saltar", 290, 510, 18, DARKGRAY);
-            break;
-        }
-
-        case PLAYING:
-        {
-            for (int i = 0; i < platformCount; i++) {
-                platforms[i].Draw();
-            }
-
-            // Obstáculo estático con pinchos en todos los lados
-            float spikeLen = 10;
-            float spikeGap = 8;
-
-            // Pinchos arriba (corregido)
-            for (float i = 0; i < spike.width; i += spikeGap) {
-                DrawTriangle(
-                    Vector2{ spike.x + i + spikeGap, spike.y },
-                    Vector2{ spike.x + i + spikeGap / 2, spike.y - spikeLen },
-                    Vector2{ spike.x + i, spike.y },
-                    MAROON
-                );
-            }
-
-            // Pinchos abajo
-            for (float i = 0; i < spike.width; i += spikeGap) {
-                DrawTriangle(
-                    Vector2{ spike.x + i, spike.y + spike.height },
-                    Vector2{ spike.x + i + spikeGap / 2, spike.y + spike.height + spikeLen },
-                    Vector2{ spike.x + i + spikeGap, spike.y + spike.height },
-                    MAROON
-                );
-            }
-
-            // Pinchos izquierda
-            for (float i = 0; i < spike.height; i += spikeGap) {
-                DrawTriangle(
-                    Vector2{ spike.x, spike.y + i },
-                    Vector2{ spike.x - spikeLen, spike.y + i + spikeGap / 2 },
-                    Vector2{ spike.x, spike.y + i + spikeGap },
-                    MAROON
-                );
-            }
-
-            // Pinchos derecha (corregido)
-            for (float i = 0; i < spike.height; i += spikeGap) {
-                DrawTriangle(
-                    Vector2{ spike.x + spike.width, spike.y + i + spikeGap },
-                    Vector2{ spike.x + spike.width + spikeLen, spike.y + i + spikeGap / 2 },
-                    Vector2{ spike.x + spike.width, spike.y + i },
-                    MAROON
-                );
-            }
-
-            DrawRectangleRec(spike, RED);
-
-            for (int i = 0; i < enemyCount; i++) {
-                enemies[i].Draw();
-            }
-
-            DrawRectangleRec(goal, GOLD);
-            DrawText("META", goal.x + 5, goal.y + 15, 20, BLACK);
-
-            player.Draw();
-
-            DrawRectangle(0, 0, SCREEN_WIDTH, 40, Fade(BLACK, 0.7f));
-            DrawText(TextFormat("Vidas: %d", player.lives), 10, 10, 20, WHITE);
-            DrawText(TextFormat("Tiempo: %.1fs", gameTime), 150, 10, 20, WHITE);
-            DrawText(TextFormat("Pos: (%.0f, %.0f)", player.position.x, player.position.y), 350, 10, 20, YELLOW);
-            DrawText("R: Reiniciar", 650, 10, 20, LIGHTGRAY);
-
-            DrawText("Llega a la META dorada", 250, 565, 18, WHITE);
-            break;
-        }
-
-        case GAMEOVER:
-        {
-            DrawText("GAME OVER", SCREEN_WIDTH / 2 - 150, 150, 50, RED);
-            DrawText(TextFormat("Tiempo sobrevivido: %.1fs", gameTime), SCREEN_WIDTH / 2 - 140, 220, 20, BLACK);
-
-            restartButton.Draw();
-            exitButton2.Draw();
-            break;
-        }
-
-        case WIN:
-        {
-            DrawText("¡VICTORIA!", SCREEN_WIDTH / 2 - 150, 150, 50, GREEN);
-            DrawText(TextFormat("Tiempo: %.1fs", gameTime), SCREEN_WIDTH / 2 - 100, 220, 25, BLACK);
-            DrawText(TextFormat("Puntos: %d", score), SCREEN_WIDTH / 2 - 80, 250, 25, BLACK);
-
-            restartButton.Draw();
-            exitButton2.Draw();
-            break;
-        }
-        }
-
-        EndDrawing();
-    }
-
-    CloseWindow();
-    return 0;
+	return 0;
 }
