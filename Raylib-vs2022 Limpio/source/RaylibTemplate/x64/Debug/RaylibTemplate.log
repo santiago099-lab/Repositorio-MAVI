@@ -1,31 +1,18 @@
 ﻿  main.cpp
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(15,12): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(134,64): warning C4244: '=': conversión de 'int' a 'float'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(193,47): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(193,29): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(194,36): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(194,23): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(196,52): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(196,35): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(200,50): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(200,33): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(205,42): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(205,29): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(206,49): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(206,31): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(210,114): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(210,96): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(210,67): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(210,39): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(211,110): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(211,92): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(211,63): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(211,35): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(212,49): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(212,31): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(216,49): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(216,31): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(94,10): warning C4456: la declaración de 'dirx' oculta la declaración local anterior
+      C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(82,8):
+      vea la declaración de 'dirx'
+  
+C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(95,10): warning C4456: la declaración de 'diry' oculta la declaración local anterior
+      C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(83,8):
+      vea la declaración de 'diry'
+  
+C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(115,53): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(115,34): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\main.cpp(127,12): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
   RaylibTemplate.vcxproj -> C:\Users\Usuario\OneDrive\Escritorio\Raylib-vs2022 Limpio\source\x64\Debug\RaylibTemplate.exe
+  No se encuentra el archivo: vld_x64.dll
   0 archivo(s) copiado(s)
   0 archivo(s) copiado(s)
   0 archivo(s) copiado(s)
